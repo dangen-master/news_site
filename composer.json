@@ -9,6 +9,8 @@
         "php": "^8.2",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
+        "moonshine/moonshine": "^3.3",
+        "moonshine/ru": "^1.0",
         "spatie/laravel-medialibrary": "^11.12"
     },
     "require-dev": {
