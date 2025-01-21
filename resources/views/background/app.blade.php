@@ -112,35 +112,31 @@
                 <!-- Гость -->
                 <a href="{{ route('login') }}">Войти</a>
                 <a href="{{ route('register') }}">Регистрация</a>
-            @else
-                @if(auth()->check() && auth()->user()->isAdmin())
-                    <a href="" 
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                        Создать новость
-                    </a>
-                @endif
+            @endauth
+            @auth
+            <a
+            href="{{ route('profile.edit') }}"
+            class="flex items-center space-x-2 text-blue-500 hover:text-blue-700 font-semibold"
+            >
+            {{-- <img
+                src="{{ auth()->user()->getAvatarUrlAttribute() }}"
+                alt="Аватар пользователя"
+                class="w-8 h-8 rounded-full"
+            > --}}
+            <span>Профиль</span>
+            </a>
+        <!-- Кнопка Выйти -->
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button
+                type="submit"
+                class="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition"
+            >
+                <span class="flex items-center space-x-2 text-blue-500 hover:text-blue-700 font-semibold">Выйти</span>
+            </button>
+        </form>
                 <!-- Авторизованный пользователь -->
-                <a
-                    href="{{ route('profile.edit') }}"
-                    class="flex items-center space-x-2 text-blue-500 hover:text-blue-700 font-semibold"
-                >
-                    <img
-                        src="{{ auth()->user()->getAvatarUrlAttribute() }}"
-                        alt="Аватар пользователя"
-                        class="w-8 h-8 rounded-full"
-                    >
-                    <span>Профиль</span>
-                </a>
-                <!-- Кнопка Выйти -->
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button
-                        type="submit"
-                        class="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition"
-                    >
-                        Выйти
-                    </button>
-                </form>
+
             @endguest
         </div>
     </header>
