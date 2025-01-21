@@ -3,9 +3,16 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+
+use App\Http\Controllers\PostController;
+
+// Главная страница с выводом новостей
 Route::get('/', function () {
     return view('background.app');
 })->name('home');
+Route::get('/', [PostController::class, 'index']);
+
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
