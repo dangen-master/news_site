@@ -17,27 +17,27 @@ class PostController extends Controller
         $tagId = $request->get('tag');
         $authorId = $request->get('author');
         $perPage = $request->get('per_page', 10); // Количество постов на страницу
-    
+
         $orderBy = match ($sort) {
             'date_asc' => ['created_at', 'asc'],
             'date_desc' => ['created_at', 'desc'],
             default => ['created_at', 'desc'],
         };
-    
+
         $query = Post::orderBy($orderBy[0], $orderBy[1]);
-    
+
         if ($tagId) {
             $query->whereHas('tags', function ($q) use ($tagId) {
                 $q->where('tags.id', $tagId);
             });
         }
-    
+
         if ($authorId) {
             $query->where('user_id', $authorId);
         }
-    
+
         $posts = $query->paginate($perPage);
-    
+
         return view('news.index', [
             'title' => 'Новости',
             'posts' => $posts,
@@ -45,8 +45,8 @@ class PostController extends Controller
             'authors' => User::all(), // Список всех авторов
         ]);
     }
-    
-    
+
+
 
 
     public function create()

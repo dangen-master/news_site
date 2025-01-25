@@ -41,7 +41,7 @@
                         <img src="{{ asset('storage/' . $post->photo_path) }}" alt="{{ $post->title }}" class="w-full h-48 object-cover rounded mb-4">
                     @endif
                     <h2 class="text-2xl font-semibold text-white mb-2">{{ $post->title }}</h2>
-                    <p class="text-gray-400 mb-4">{{ \Illuminate\Support\Str::limit($post->body, 100, '...') }}</p>
+                    <p class="mb-4 ">{{ \Illuminate\Support\Str::limit($post->body, 100, '...') }}</p>
                     <p class="text-gray-500 text-sm">Автор: {{ $post->user->name }}</p>
                     <p class="text-gray-500 text-sm">Опубликовано: {{ $post->created_at->format('d.m.Y H:i') }}</p>
                     <a href="{{ route('news.show', $post) }}" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 mt-4 inline-block">
