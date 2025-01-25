@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,7 @@ class ProfileController extends Controller
     {
         return view('profile.edit', [
             'user' => $request->user(),
+            'title' => 'Редактирование пользователя ' . $request->user()->name
         ]);
     }
 
@@ -33,6 +35,13 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
+
+        if ($request->hasFile('profile_image')) {
+            $request->user()->clearMediaCollection(User::IMAGE_COLLECTION);
+
+            $request->user()->addMediaFromRequest('profile_image')
+                ->toMediaCollection(User::IMAGE_COLLECTION);
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
