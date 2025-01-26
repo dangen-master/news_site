@@ -24,7 +24,6 @@ class PostFactory extends Factory
         return [
             'title' => $title,
             'user_id' => User::inRandomOrder()->first('id'),
-            'slug' => Str::slug($title),
             'body' => fake()->paragraphs(50, true),
         ];
     }

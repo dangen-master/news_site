@@ -69,6 +69,8 @@ class PostResource extends ModelResource
             ])
         ];
     }
+    
+    
 
     /**
      * Поля, отображаемые на детальной странице просмотра

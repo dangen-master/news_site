@@ -17,7 +17,7 @@ Route::get('/news/{post}', [PostController::class, 'show'])->name('news.show');
 
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return redirect()->route('news.index'); // Перенаправление на главную страницу
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
@@ -27,12 +27,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 Route::middleware('auth')->group(function () {
-    Route::get('/news/create', [NewsController::class, 'create'])->name('news.create'); // Страница создания новости
-    Route::post('/news', [NewsController::class, 'store'])->name('news.store'); // Обработка формы
-});
-
-Route::get('/test', function () {
-    return dd(Post::with('user')->get()->toArray());
+    Route::get('/news/create', [PostController::class, 'create'])->name('news.create'); // Страница создания новости
+    Route::post('/news', [PostController::class, 'store'])->name('news.store'); // Обработка формы
 });
 
 require __DIR__.'/auth.php';

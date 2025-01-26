@@ -9,14 +9,6 @@
         <div class="flex justify-center items-center space-x-4 mb-6">
             <!-- Форма фильтров -->
             <form method="GET" class="flex space-x-4">
-                <select name="tag" class="bg-gray-800 text-white px-4 py-2 rounded">
-                    <option value="">Все теги</option>
-                    @foreach ($tags as $tag)
-                        <option value="{{ $tag->id }}" {{ request('tag') == $tag->id ? 'selected' : '' }}>
-                            {{ $tag->name }}
-                        </option>
-                    @endforeach
-                </select>
                 <select name="author" class="bg-gray-800 text-white px-4 py-2 rounded">
                     <option value="">Все авторы</option>
                     @foreach ($authors as $author)

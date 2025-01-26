@@ -16,7 +16,6 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->foreignIdFor(User::class)->constrained();
-            $table->string('slug')->unique();
             $table->text('body');
             $table->timestamps();
         });

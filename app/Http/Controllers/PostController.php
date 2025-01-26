@@ -4,19 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Models\User;
-
 
 class PostController extends Controller
 {
+    // Метод для отображения списка постов
     public function index(Request $request)
     {
         $sort = $request->get('sort', 'date_desc');
-        $tagId = $request->get('tag');
         $authorId = $request->get('author');
-        $perPage = $request->get('per_page', 10); // Количество постов на страницу
+        $perPage = $request->get('per_page', 10); // Количество постов на странице
 
         $orderBy = match ($sort) {
             'date_asc' => ['created_at', 'asc'],
@@ -25,12 +24,6 @@ class PostController extends Controller
         };
 
         $query = Post::orderBy($orderBy[0], $orderBy[1]);
-
-        if ($tagId) {
-            $query->whereHas('tags', function ($q) use ($tagId) {
-                $q->where('tags.id', $tagId);
-            });
-        }
 
         if ($authorId) {
             $query->where('user_id', $authorId);
@@ -41,82 +34,69 @@ class PostController extends Controller
         return view('news.index', [
             'title' => 'Новости',
             'posts' => $posts,
-            'tags' => Tag::all(),
             'authors' => User::all(), // Список всех авторов
         ]);
     }
 
-
-
-
+    // Метод для отображения формы создания поста
     public function create()
     {
-        return view('post-create', [
-            'title' => 'Добавление поста',
-            'tags' => Tag::all(),
+        return view('news.create', [
+            'title' => 'Создать новость',
         ]);
     }
 
-    public function post(Request $request)
+    // Метод для сохранения нового поста
+    public function store(Request $request)
     {
-        $data = $request->validate([
-            'title' => 'required|min:8',
-            'body' => 'required|min:8',
-            'tags' => 'nullable|array',
-            'tags.*' => 'exists:tags,id',
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'body' => 'required|string',
+            'user_id' => 'required|exists:users,id', // Выбор автора
         ]);
 
-        $title = $data['title'];
-        $body = $data['body'];
-        $slug = Str::slug($title);
+        Post::create($validated);
 
-        $post = Post::create([
-        'title' => $title,
-        'body' => $body,
-        'slug' => $slug,
-        'user_id' => $request->user()->id
-        ]);
-
-        if (isset($data['tags'])) {
-        $post->tags()->sync($data['tags']);
-        }
-
-       return redirect()->back()->with('success', 'Пост успешно создан!');
+        return redirect()->route('news.index')->with('success', 'Новость успешно создана!');
     }
 
-    public function update(Request $request, Post $post)
-    {
-        return view('post-update', [
-            'title' => 'Обновление поста ' . $post->title,
-            'post' => $post,
-            'tags' => Tag::all(),
-            'postTags' => $post->tags
-        ]);
-    }
-
-    public function updateSuccess(Request $request, Post $post)
-    {
-        $data = $request->validate([
-            'title' => 'sometimes|min:8',
-            'body' => 'sometimes|min:8'
-        ]);
-
-        $title = $data['title'];
-        $body = $data['body'];
-        $slug = Str::slug($title);
-
-        $post->update([
-            'title' => $title,
-            'body' => $body,
-            'slug' => $slug,
-        ]);
-
-        return redirect()->back()->with('success', 'Пост успешно обновлён!');
-    }
+    // Метод для отображения конкретного поста
     public function show(Post $post)
     {
         return view('news.show', [
             'post' => $post,
         ]);
+    }
+
+    // Метод для отображения формы редактирования поста
+    public function edit(Post $post)
+    {
+        return view('news.edit', [
+            'title' => 'Редактирование поста',
+            'post' => $post,
+            'authors' => User::all(),
+        ]);
+    }
+
+    // Метод для обновления поста
+    public function update(Request $request, Post $post)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'body' => 'required|string',
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $post->update($validated);
+
+        return redirect()->route('news.index')->with('success', 'Новость успешно обновлена!');
+    }
+
+    // Метод для удаления поста
+    public function destroy(Post $post)
+    {
+        $post->delete();
+
+        return redirect()->route('news.index')->with('success', 'Новость успешно удалена!');
     }
 }
