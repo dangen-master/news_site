@@ -113,4 +113,10 @@ class PostController extends Controller
 
         return redirect()->back()->with('success', 'Пост успешно обновлён!');
     }
+    public function show(Post $post)
+    {
+        return view('news.show', [
+            'post' => $post,
+        ]);
+    }
 }

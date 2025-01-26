@@ -12,58 +12,76 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+    public function edit(Request $request)
     {
         return view('profile.edit', [
             'user' => $request->user(),
-            'title' => 'Редактирование пользователя ' . $request->user()->name
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request)
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $validated = $request->validate([
+            'cropped_image' => ['nullable', 'string'],
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        // Сохранение обрезанного изображения
+        if ($request->filled('cropped_image')) {
+            $imageData = $validated['cropped_image'];
+            $imageData = str_replace('data:image/png;base64,', '', $imageData);
+            $imageData = str_replace(' ', '+', $imageData);
+            $image = base64_decode($imageData);
+
+            // Удаление старого аватара
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            // Сохранение нового аватара
+            $avatarPath = 'avatars/' . uniqid() . '.png';
+            Storage::disk('public')->put($avatarPath, $image);
+            $user->avatar = $avatarPath;
         }
 
-        $request->user()->save();
+        // Обновление имени
+        $user->name = $validated['name'];
+        $user->save();
 
-        if ($request->hasFile('profile_image')) {
-            $request->user()->clearMediaCollection(User::IMAGE_COLLECTION);
+        return back()->with('success', 'Профиль успешно обновлен!');
+    }
 
-            $request->user()->addMediaFromRequest('profile_image')
-                ->toMediaCollection(User::IMAGE_COLLECTION);
-        }
+    public function updatePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        $user = $request->user();
+        $user->password = Hash::make($validated['password']);
+        $user->save();
+
+        return back()->with('success', 'Пароль успешно изменен!');
     }
 
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
-
-        Auth::logout();
-
+    
+        // Удаление пользователя
         $user->delete();
-
+    
+        // Завершение сеанса
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+    
+        return redirect('/')->with('success', 'Ваш профиль был успешно удален.');
     }
+    
 }
