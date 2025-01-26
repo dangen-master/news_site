@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NewsController;
 
 use App\Http\Controllers\PostController;
+use App\Models\Post;
+use App\Models\User;
 
 // Главная страница с выводом новостей
 Route::get('/', function () {
@@ -27,6 +29,10 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/news/create', [NewsController::class, 'create'])->name('news.create'); // Страница создания новости
     Route::post('/news', [NewsController::class, 'store'])->name('news.store'); // Обработка формы
+});
+
+Route::get('/test', function () {
+    return dd(Post::with('user')->get()->toArray());
 });
 
 require __DIR__.'/auth.php';

@@ -21,14 +21,16 @@
             <!-- Текущий аватар -->
             <div class="mb-4">
                 <label class="block text-gray-300 mb-2">Текущая фотография</label>
-                <img src="{{ $user->getAvatarUrl() }}" alt="Аватар" class="w-32 h-32 rounded-full mb-4 object-cover">
+                <input id="profile_image" name="profile_image" type="file" class="mt-1 block w-full" accept="image/*">
+
+                @if ($user->image->isNotEmpty())
+                    <div class="mt-2">
+                        <img src="{{ $user->getFirstMediaUrl('image') }}" alt="Profile Image" class="w-20 h-20 rounded-full object-cover">
+                    </div>
+                @endif
             </div>
 
-            <!-- Загрузка новой аватарки -->
-            <div>
-                <label class="block text-gray-300 mb-2">Загрузить новую фотографию</label>
-                <input type="file" name="avatar" class="bg-gray-700 text-white rounded px-4 py-2 w-full">
-            </div>
+
 
             <!-- Никнейм -->
             <div>
@@ -39,8 +41,8 @@
             <!-- Роль -->
             <div>
                 <label class="block text-gray-300">Роль</label>
-                <input type="text" value="{{ $user->role->name ?? 'Роль не указана' }}" disabled class="bg-gray-700 text-gray-400 rounded px-4 py-2 w-full">
-            </div>            
+                <input type="text" value="{{ $user->role->role ?? 'Роль не указана' }}" disabled class="bg-gray-700 text-gray-400 rounded px-4 py-2 w-full">
+            </div>
 
             <!-- Email -->
             <div>

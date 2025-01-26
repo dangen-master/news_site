@@ -31,12 +31,7 @@ class User extends Authenticatable implements HasMedia
         'email',
         'password',
         'role_id',
-        'avatar',
     ];
-    public function getAvatarUrl()
-    {
-        return $this->avatar ? asset('storage/' . $this->avatar) : asset('default-avatar.png');
-    }
 
     /**
      * The attributes that should be hidden for serialization.

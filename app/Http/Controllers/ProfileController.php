@@ -28,27 +28,17 @@ class ProfileController extends Controller
             'name' => ['required', 'string', 'max:255'],
         ]);
 
-        // Сохранение обрезанного изображения
-        if ($request->filled('cropped_image')) {
-            $imageData = $validated['cropped_image'];
-            $imageData = str_replace('data:image/png;base64,', '', $imageData);
-            $imageData = str_replace(' ', '+', $imageData);
-            $image = base64_decode($imageData);
-
-            // Удаление старого аватара
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-
-            // Сохранение нового аватара
-            $avatarPath = 'avatars/' . uniqid() . '.png';
-            Storage::disk('public')->put($avatarPath, $image);
-            $user->avatar = $avatarPath;
-        }
 
         // Обновление имени
         $user->name = $validated['name'];
         $user->save();
+
+        if ($request->hasFile('profile_image')) {
+            $request->user()->clearMediaCollection(User::IMAGE_COLLECTION);
+
+            $request->user()->addMediaFromRequest('profile_image')
+                ->toMediaCollection(User::IMAGE_COLLECTION);
+        }
 
         return back()->with('success', 'Профиль успешно обновлен!');
     }
@@ -73,15 +63,15 @@ class ProfileController extends Controller
     public function destroy(Request $request)
     {
         $user = $request->user();
-    
+
         // Удаление пользователя
         $user->delete();
-    
+
         // Завершение сеанса
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-    
+
         return redirect('/')->with('success', 'Ваш профиль был успешно удален.');
     }
-    
+
 }

@@ -54,8 +54,8 @@
                     <h2 class="text-2xl font-semibold text-white mb-2">{{ $post->title }}</h2>
                     <p class="mb-4 ">{{ \Illuminate\Support\Str::limit($post->body, 100, '...') }}</p>
                     <div class="flex items-center space-x-2 text-gray-500 text-sm mb-2">
-                        @if ($post->user->avatar)
-                            <img src="{{ asset('storage/' . $post->user->avatar) }}" alt="{{ $post->user->name }}" class="w-8 h-8 rounded-full">
+                        @if ($post->user->image->isNotEmpty())
+                            <img src="{{ $post->user->getFirstMediaUrl('image') }}" alt="{{ $post->user->name }}" class="w-8 h-8 rounded-full">
                         @else
                             <img src="{{ asset('default-avatar.png') }}" alt="{{ $post->user->name }}" class="w-8 h-8 rounded-full">
                         @endif

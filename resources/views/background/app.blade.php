@@ -33,8 +33,8 @@
             @endauth
             @auth
             <a href="{{ route('profile.edit') }}" class="flex items-center space-x-2 text-blue-500 hover:text-blue-700 font-semibold">
-                @if (auth()->user()->avatar)
-                    <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="Аватар" class="w-8 h-8 rounded-full">
+                @if (auth()->user()->image->isNotEmpty())
+                    <img src="{{ auth()->user()->getFirstMediaUrl('image') }}" alt="Аватар" class="w-8 h-8 rounded-full">
                 @else
                     <img src="{{ asset('default-avatar.png') }}" alt="Аватар" class="w-8 h-8 rounded-full">
                 @endif
